@@ -17,7 +17,6 @@ const Cards = () => {
   });
 
   console.log("userAndTransactions:", userAndTransactions);
-
   console.log("cards:", data);
 
   // TODO => ADD RELATIONSHIPS
