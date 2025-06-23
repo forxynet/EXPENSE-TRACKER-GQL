@@ -6,6 +6,7 @@ import path from "path";
 import passport from "passport";
 import session from "express-session";
 import connectMongo from "connect-mongodb-session";
+import rateLimit from "express-rate-limit";
 
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
@@ -39,6 +40,21 @@ const store = new MongoDBStore({
 });
 
 store.on("error", (err) => console.log(err));
+
+// 🔐 RATE LIMIT MIDDLEWARE – IP başına 15 dakikada 100 istek
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 dakika
+  max: 100, // Her IP için maksimum 100 istek
+  message: {
+    status: 429,
+    message: "Çok fazla istek yaptınız, lütfen daha sonra tekrar deneyin.",
+  },
+  standardHeaders: true, // RateLimit-* başlıklarını gönderir
+  legacyHeaders: false, // X-RateLimit-* başlıklarını kapatır
+});
+
+// 🔹 Uygulamaya global olarak ekleniyor
+app.use(limiter);
 
 app.use(
   session({
