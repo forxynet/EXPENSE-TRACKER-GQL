@@ -41,19 +41,19 @@ const store = new MongoDBStore({
 
 store.on("error", (err) => console.log(err));
 
-// 🔐 RATE LIMIT MIDDLEWARE – IP başına 15 dakikada 100 istek
+// RATE LIMIT MIDDLEWARE – 100 requests per IP in 15 minutes
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 100, // Her IP için maksimum 100 istek
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Maximum 100 requests per IP
   message: {
     status: 429,
-    message: "Çok fazla istek yaptınız, lütfen daha sonra tekrar deneyin.",
+    message: "You have made too many requests, please try again later.",
   },
-  standardHeaders: true, // RateLimit-* başlıklarını gönderir
-  legacyHeaders: false, // X-RateLimit-* başlıklarını kapatır
+  standardHeaders: true, // Sends RateLimit-* headers
+  legacyHeaders: false, // Closes X-RateLimit-* headers
 });
 
-// 🔹 Uygulamaya global olarak ekleniyor
+// Adding globally to the application
 app.use(limiter);
 
 app.use(
